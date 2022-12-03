@@ -91,8 +91,11 @@ func totalPrioritiesV2() (sum int) {
 func gimmeTheBadge(group []string) (badge int32, err error) {
 	for _, e := range group[0] {
 		for _, k := range group[1] {
+			if string(e) != string(k) {
+				continue
+			}
 			for _, l := range group[2] {
-				if string(e) == string(k) && string(e) == string(l) {
+				if string(e) == string(l) {
 					return e, nil
 				}
 			}
