@@ -9,8 +9,9 @@ import (
 
 func main() {
 	fmt.Printf(
-		"part 1: %v\n",
+		"part 1: %v\npart 2: %v\n",
 		totalPriorities(),
+		totalPrioritiesV2(),
 	)
 }
 
@@ -63,4 +64,44 @@ func whatsThePriority(element int32) int {
 		return int(element) - 96
 	}
 	return int(element) - 64 + 26
+}
+
+func totalPrioritiesV2() (sum int) {
+	file := openFile("./day-3/input.txt")
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		var group []string
+		group = append(group, scanner.Text())
+		scanner.Scan()
+		group = append(group, scanner.Text())
+		scanner.Scan()
+		group = append(group, scanner.Text())
+
+		e, err := gimmeTheBadge(group)
+		if err != nil {
+			panic(err)
+		}
+		sum += whatsThePriority(e)
+	}
+	return
+}
+
+func gimmeTheBadge(group []string) (badge int32, err error) {
+	for _, e := range group[0] {
+		for _, k := range group[1] {
+			for _, l := range group[2] {
+				if string(e) == string(k) && string(e) == string(l) {
+					return e, nil
+				}
+			}
+		}
+	}
+	err = fmt.Errorf(
+		"cannot find a recurrent element on each rucksack of the "+
+			"following group:\n    \"%v\"",
+		group,
+	)
+	return 0, err
 }
