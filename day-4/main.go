@@ -12,6 +12,7 @@ func main() {
 	fmt.Printf(
 		"part 1: %v\npart 2: %v\n",
 		findOverlap(),
+		findOverlapV2(),
 	)
 }
 
@@ -58,4 +59,38 @@ func openFile(path string) *os.File {
 		panic(err)
 	}
 	return file
+}
+
+func findOverlapV2() (result int) {
+	file := openFile("./day-4/input.txt")
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		text := strings.Split(scanner.Text(), ",")
+		section1 := text[0]
+		section2 := text[1]
+		if doesThisPairOverlapAtAll(section1, section2) {
+			result++
+		}
+	}
+	return
+}
+
+func doesThisPairOverlapAtAll(section1 string, section2 string) bool {
+	id1 := getActualId(section1)
+	id2 := getActualId(section2)
+	if id2[0] >= id1[0] && id2[0] <= id1[1] {
+		return true
+	}
+	if id1[0] >= id2[0] && id1[0] <= id2[1] {
+		return true
+	}
+	if id2[1] >= id1[0] && id2[1] <= id1[1] {
+		return true
+	}
+	if id1[1] >= id2[0] && id1[1] <= id2[1] {
+		return true
+	}
+	return false
 }
