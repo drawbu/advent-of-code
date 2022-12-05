@@ -10,8 +10,9 @@ import (
 
 func main() {
 	fmt.Printf(
-		"part 1: %v\n",
+		"part 1: %v\npart 2: %v\n",
 		moveCrates(),
+		moveCratesV2(),
 	)
 }
 
@@ -116,4 +117,49 @@ func getMovement(text string) [3]int {
 		panic(err)
 	}
 	return [3]int{move, from, to}
+}
+
+func moveCratesV2() (result string) {
+	file := openFile("./day-5/input.txt")
+	defer file.Close()
+
+	instructions := false
+	scanner := bufio.NewScanner(file)
+	var defaultStacks []string
+	var stacks []Stack
+	for scanner.Scan() {
+		text := scanner.Text()
+
+		// Get starting crates position
+		if !instructions {
+			if text == "" {
+				instructions = true
+				stacks = splitter(defaultStacks)
+				continue
+			}
+			defaultStacks = append(defaultStacks, text)
+			continue
+		}
+
+		// Applies instructions
+		movement := getMovement(text)
+		elements := stacks[movement[1]-1].MultiPop(movement[0])
+		stacks[movement[2]-1].MultiAdd(elements)
+	}
+
+	// Get last letter of each
+	for _, s := range stacks {
+		result += s.items[len(s.items)-1]
+	}
+	return
+}
+
+func (d *Stack) MultiAdd(elements []string) {
+	d.items = append(d.items, elements...)
+}
+
+func (d *Stack) MultiPop(number int) (elements []string) {
+	elements = d.items[len(d.items)-number : len(d.items)]
+	d.items = d.items[:len(d.items)-number]
+	return
 }
