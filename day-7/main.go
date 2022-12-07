@@ -11,12 +11,13 @@ import (
 func main() {
 	fmt.Printf(
 		"part 1: %v\npart 2: %v\n",
-		sumSizeSmallDirectories(),
-		findStartOfPacketMarker(),
+		partOne(),
+		partTwo(),
 	)
 }
 
-func sumSizeSmallDirectories() (result int) {
+// Part 1: get the sum of the size of directories with a size < 100_000.
+func partOne() (result int) {
 	fs := getFileSystem(*openFile("./day-7/input.txt"))
 
 	for _, size := range fs {
@@ -25,6 +26,22 @@ func sumSizeSmallDirectories() (result int) {
 		}
 	}
 	return
+}
+
+// Part 2: find the best directory to remove to have a total size < 40_000_000.
+func partTwo() int {
+	fs := getFileSystem(*openFile("./day-7/input.txt"))
+
+	bestDir := "/"
+	freeSpaceNeeded := fs["/"] - 40_000_000
+	for path, size := range fs {
+		if size >= freeSpaceNeeded {
+			if size < fs[bestDir] {
+				bestDir = path
+			}
+		}
+	}
+	return fs[bestDir]
 }
 
 // Open the input.txt file and return the content.
@@ -37,6 +54,7 @@ func openFile(path string) *os.File {
 	return file
 }
 
+// Get the file system as a map of path -> size.
 func getFileSystem(file os.File) map[string]int {
 	defer file.Close()
 
@@ -66,20 +84,4 @@ func getFileSystem(file os.File) map[string]int {
 		}
 	}
 	return fs
-}
-
-func findStartOfPacketMarker() int {
-	fs := getFileSystem(*openFile("./day-7/input.txt"))
-	freeSpaceNeeded := fs["/"] - 40_000_000
-
-	bestDir := "/"
-
-	for path, size := range fs {
-		if size >= freeSpaceNeeded {
-			if size < fs[bestDir] {
-				bestDir = path
-			}
-		}
-	}
-	return fs[bestDir]
 }
