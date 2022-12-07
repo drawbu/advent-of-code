@@ -10,8 +10,9 @@ import (
 
 func main() {
 	fmt.Printf(
-		"part 1: %v\n",
+		"part 1: %v\npart 2: %v\n",
 		sumSizeSmallDirectories(),
+		findStartOfPacketMarker(),
 	)
 }
 
@@ -65,4 +66,20 @@ func getFileSystem(file os.File) map[string]int {
 		}
 	}
 	return fs
+}
+
+func findStartOfPacketMarker() int {
+	fs := getFileSystem(*openFile("./day-7/input.txt"))
+	freeSpaceNeeded := fs["/"] - 40_000_000
+
+	bestDir := "/"
+
+	for path, size := range fs {
+		if size >= freeSpaceNeeded {
+			if size < fs[bestDir] {
+				bestDir = path
+			}
+		}
+	}
+	return fs[bestDir]
 }
