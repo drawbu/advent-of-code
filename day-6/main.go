@@ -9,19 +9,30 @@ import (
 func main() {
 	fmt.Printf(
 		"part 1: %v\npart 2: %v\n",
-		findStartOfPacketMarker(),
-		findStartOfMessageMarker(),
+		partOne(),
+		partTwo(),
 	)
 }
 
-func findStartOfPacketMarker() (result int) {
+// Part 1: find the start of the packet marker.
+func partOne() int {
+	return findStartOfMarker(4)
+}
+
+// Part 2: find the start of the Message marker.
+func partTwo() int {
+	return findStartOfMarker(14)
+}
+
+// Find start of a marker of a given size in the input.txt file.
+func findStartOfMarker(size int) (result int) {
 	file := openFile("./day-6/input.txt")
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
 	if scanner.Scan() {
 		text := scanner.Text()
-		set := Set{size: 4}
+		set := Set{size: size}
 		for i, c := range text {
 			if set.Add(c) {
 				return i + 1
@@ -59,21 +70,4 @@ func (s *Set) Add(element int32) bool {
 		}
 	}
 	return true
-}
-
-func findStartOfMessageMarker() (result int) {
-	file := openFile("./day-6/input.txt")
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	if scanner.Scan() {
-		text := scanner.Text()
-		set := Set{size: 14}
-		for i, c := range text {
-			if set.Add(c) {
-				return i + 1
-			}
-		}
-	}
-	return -1
 }
