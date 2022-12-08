@@ -20,12 +20,10 @@ func partOne() (result int) {
 	result += trees.size[0]*2 + trees.size[1]*2 - 4
 
 	for trees.scan(1) {
-		x, y := trees.current()
-
 		// right
 		visible := true
-		for i := y + 1; i < trees.size[1]; i++ {
-			if trees.get(x, i) >= trees.get(x, y) {
+		for i := trees.y + 1; i < trees.size[1]; i++ {
+			if trees.get(trees.x, i) >= trees.get(trees.x, trees.y) {
 				visible = false
 				break
 			}
@@ -37,8 +35,8 @@ func partOne() (result int) {
 
 		// left
 		visible = true
-		for i := y - 1; i >= 0; i-- {
-			if trees.get(x, i) >= trees.get(x, y) {
+		for i := trees.y - 1; i >= 0; i-- {
+			if trees.get(trees.x, i) >= trees.get(trees.x, trees.y) {
 				visible = false
 				break
 			}
@@ -50,8 +48,8 @@ func partOne() (result int) {
 
 		// up
 		visible = true
-		for i := x - 1; i >= 0; i-- {
-			if trees.get(i, y) >= trees.get(x, y) {
+		for i := trees.x - 1; i >= 0; i-- {
+			if trees.get(i, trees.y) >= trees.get(trees.x, trees.y) {
 				visible = false
 				break
 			}
@@ -63,8 +61,8 @@ func partOne() (result int) {
 
 		// down
 		visible = true
-		for i := x + 1; i < trees.size[0]; i++ {
-			if trees.get(i, y) >= trees.get(x, y) {
+		for i := trees.x + 1; i < trees.size[0]; i++ {
+			if trees.get(i, trees.y) >= trees.get(trees.x, trees.y) {
 				visible = false
 				break
 			}
@@ -83,50 +81,52 @@ func partTwo() (result int) {
 	bestTree := [2]int{0, 0}
 
 	for trees.scan(0) {
-		x, y := trees.current()
-
 		scenicScore := 1
+
 		// right
-		s := 0
-		for i := y + 1; i < trees.size[1]; i++ {
-			s++
-			if trees.get(x, i) >= trees.get(x, y) {
+		i := trees.y + 1
+		for i < trees.size[1] {
+			if trees.get(trees.x, i) >= trees.get(trees.x, trees.y) {
 				break
 			}
+			i++
 		}
-		scenicScore *= s
+		scenicScore *= i - (trees.y + 1)
+
 		// left
-		s = 0
-		for i := y - 1; i >= 0; i-- {
-			s++
-			if trees.get(x, i) >= trees.get(x, y) {
+		i = 0
+		for i < trees.y {
+			i++
+			if trees.get(trees.x, trees.y-i) >= trees.get(trees.x, trees.y) {
 				break
 			}
 		}
-		scenicScore *= s
+		scenicScore *= i
+
 		// up
-		s = 0
-		for i := x - 1; i >= 0; i-- {
-			s++
-			if trees.get(i, y) >= trees.get(x, y) {
+		i = 0
+		for i < trees.x {
+			i++
+			if trees.get(trees.x-i, trees.y) >= trees.get(trees.x, trees.y) {
 				break
 			}
 		}
-		scenicScore *= s
+		scenicScore *= i
+
 		// down
-		s = 0
-		for i := x + 1; i < trees.size[0]; i++ {
-			s++
-			if trees.get(i, y) >= trees.get(x, y) {
+		i = trees.x + 1
+		for i < trees.size[0] {
+			if trees.get(i, trees.y) >= trees.get(trees.x, trees.y) {
 				break
 			}
+			i++
 		}
-		scenicScore *= s
+		scenicScore *= i - (trees.x + 1)
 
 		if scenicScore > result {
 			result = scenicScore
-			bestTree[0] = x
-			bestTree[1] = y
+			bestTree[0] = trees.x
+			bestTree[1] = trees.y
 		}
 	}
 	return
@@ -159,6 +159,7 @@ func getTreeList(file os.File) Trees {
 	return Trees{trees, 0, 0, [2]int{len(trees), len(trees[0])}}
 }
 
+// Trees is a list of trees.
 type Trees struct {
 	list [][]int32
 	x    int
@@ -166,10 +167,12 @@ type Trees struct {
 	size [2]int
 }
 
+// Get the value at the given coordinates.
 func (t *Trees) get(x int, y int) int32 {
 	return t.list[x][y]
 }
 
+// Scan to the next tree.
 func (t *Trees) scan(bordersSize int) bool {
 	if t.x == 0 {
 		t.x = bordersSize
@@ -184,8 +187,4 @@ func (t *Trees) scan(bordersSize int) bool {
 		t.y++
 	}
 	return true
-}
-
-func (t *Trees) current() (int, int) {
-	return t.x, t.y
 }
