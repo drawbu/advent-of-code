@@ -17,59 +17,61 @@ func main() {
 // Part 1: find the number of trees visible from the borders.
 func partOne() (result int) {
 	trees := getTreeList(*openFile("./day-8/input.txt"))
-	size := [2]int{len(trees), len(trees[0])}
-	result += size[0]*2 + size[1]*2 - 4
+	result += trees.size[0]*2 + trees.size[1]*2 - 4
 
-	for x := 1; x < size[0]-1; x++ {
-		for y := 1; y < size[1]-1; y++ {
-			visible := true
-			// right
-			for i := y + 1; i < size[1]; i++ {
-				if trees[x][i] >= trees[x][y] {
-					visible = false
-					break
-				}
+	for trees.scan(1) {
+		x, y := trees.current()
+
+		// right
+		visible := true
+		for i := y + 1; i < trees.size[1]; i++ {
+			if trees.get(x, i) >= trees.get(x, y) {
+				visible = false
+				break
 			}
-			if visible {
-				result++
-				continue
+		}
+		if visible {
+			result++
+			continue
+		}
+
+		// left
+		visible = true
+		for i := y - 1; i >= 0; i-- {
+			if trees.get(x, i) >= trees.get(x, y) {
+				visible = false
+				break
 			}
-			visible = true
-			// left
-			for i := y - 1; i >= 0; i-- {
-				if trees[x][i] >= trees[x][y] {
-					visible = false
-					break
-				}
+		}
+		if visible {
+			result++
+			continue
+		}
+
+		// up
+		visible = true
+		for i := x - 1; i >= 0; i-- {
+			if trees.get(i, y) >= trees.get(x, y) {
+				visible = false
+				break
 			}
-			if visible {
-				result++
-				continue
+		}
+		if visible {
+			result++
+			continue
+		}
+
+		// down
+		visible = true
+		for i := x + 1; i < trees.size[0]; i++ {
+			if trees.get(i, y) >= trees.get(x, y) {
+				visible = false
+				break
 			}
-			visible = true
-			// up
-			for i := x - 1; i >= 0; i-- {
-				if trees[i][y] >= trees[x][y] {
-					visible = false
-					break
-				}
-			}
-			if visible {
-				result++
-				continue
-			}
-			visible = true
-			// down
-			for i := x + 1; i < size[0]; i++ {
-				if trees[i][y] >= trees[x][y] {
-					visible = false
-					break
-				}
-			}
-			if visible {
-				result++
-				continue
-			}
+		}
+		if visible {
+			result++
+			continue
 		}
 	}
 	return
@@ -78,55 +80,53 @@ func partOne() (result int) {
 // Part 2: find the best location to see the most trees.
 func partTwo() (result int) {
 	trees := getTreeList(*openFile("./day-8/input.txt"))
-	size := [2]int{len(trees), len(trees[0])}
-
 	bestTree := [2]int{0, 0}
 
-	for x := 0; x < size[0]; x++ {
-		for y := 0; y < size[1]; y++ {
-			scenicScore := 1
-			// right
-			s := 0
-			for i := y + 1; i < size[1]; i++ {
-				s++
-				if trees[x][i] >= trees[x][y] {
-					break
-				}
-			}
-			scenicScore *= s
-			// left
-			s = 0
-			for i := y - 1; i >= 0; i-- {
-				s++
-				if trees[x][i] >= trees[x][y] {
-					break
-				}
-			}
-			scenicScore *= s
-			// up
-			s = 0
-			for i := x - 1; i >= 0; i-- {
-				s++
-				if trees[i][y] >= trees[x][y] {
-					break
-				}
-			}
-			scenicScore *= s
-			// down
-			s = 0
-			for i := x + 1; i < size[0]; i++ {
-				s++
-				if trees[i][y] >= trees[x][y] {
-					break
-				}
-			}
-			scenicScore *= s
+	for trees.scan(0) {
+		x, y := trees.current()
 
-			if scenicScore > result {
-				result = scenicScore
-				bestTree[0] = x
-				bestTree[1] = y
+		scenicScore := 1
+		// right
+		s := 0
+		for i := y + 1; i < trees.size[1]; i++ {
+			s++
+			if trees.get(x, i) >= trees.get(x, y) {
+				break
 			}
+		}
+		scenicScore *= s
+		// left
+		s = 0
+		for i := y - 1; i >= 0; i-- {
+			s++
+			if trees.get(x, i) >= trees.get(x, y) {
+				break
+			}
+		}
+		scenicScore *= s
+		// up
+		s = 0
+		for i := x - 1; i >= 0; i-- {
+			s++
+			if trees.get(i, y) >= trees.get(x, y) {
+				break
+			}
+		}
+		scenicScore *= s
+		// down
+		s = 0
+		for i := x + 1; i < trees.size[0]; i++ {
+			s++
+			if trees.get(i, y) >= trees.get(x, y) {
+				break
+			}
+		}
+		scenicScore *= s
+
+		if scenicScore > result {
+			result = scenicScore
+			bestTree[0] = x
+			bestTree[1] = y
 		}
 	}
 	return
@@ -143,9 +143,10 @@ func openFile(path string) *os.File {
 }
 
 // Get the file system as a map of path -> size.
-func getTreeList(file os.File) (trees [][]int32) {
+func getTreeList(file os.File) Trees {
 	defer file.Close()
 
+	var trees [][]int32
 	scanner := bufio.NewScanner(&file)
 	for scanner.Scan() {
 		text := scanner.Text()
@@ -155,5 +156,36 @@ func getTreeList(file os.File) (trees [][]int32) {
 		}
 		trees = append(trees, row)
 	}
-	return
+	return Trees{trees, 0, 0, [2]int{len(trees), len(trees[0])}}
+}
+
+type Trees struct {
+	list [][]int32
+	x    int
+	y    int
+	size [2]int
+}
+
+func (t *Trees) get(x int, y int) int32 {
+	return t.list[x][y]
+}
+
+func (t *Trees) scan(bordersSize int) bool {
+	if t.x == 0 {
+		t.x = bordersSize
+	}
+	if t.x == t.size[0]-1-bordersSize && t.y == t.size[1]-1-bordersSize {
+		return false
+	}
+	if t.y == t.size[1]-1-bordersSize {
+		t.x++
+		t.y = bordersSize
+	} else {
+		t.y++
+	}
+	return true
+}
+
+func (t *Trees) current() (int, int) {
+	return t.x, t.y
 }
