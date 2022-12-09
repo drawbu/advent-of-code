@@ -10,6 +10,7 @@ import (
 	"main/day-6"
 	"main/day-7"
 	"main/day-8"
+	"main/day-9"
 	"main/utils"
 )
 
@@ -23,6 +24,7 @@ func main() {
 		&day_6.Day6{},
 		&day_7.Day7{},
 		&day_8.Day8{},
+		&day_9.Day9{},
 	}
 	for i, s := range sol {
 		partOne, partTwo := utils.Print(s)
