@@ -1,32 +1,27 @@
-package main
+package day_6
 
 import (
 	"bufio"
-	"fmt"
-	"os"
+	"main/utils"
+	"strconv"
 )
 
-func main() {
-	fmt.Printf(
-		"part 1: %v\npart 2: %v\n",
-		partOne(),
-		partTwo(),
-	)
+type Day6 struct {
 }
 
 // Part 1: find the start of the packet marker.
-func partOne() int {
-	return findStartOfMarker(4)
+func (d Day6) PartOne() string {
+	return strconv.Itoa(findStartOfMarker(4))
 }
 
 // Part 2: find the start of the Message marker.
-func partTwo() int {
-	return findStartOfMarker(14)
+func (d Day6) PartTwo() string {
+	return strconv.Itoa(findStartOfMarker(14))
 }
 
 // Find start of a marker of a given size in the input.txt file.
 func findStartOfMarker(size int) (result int) {
-	file := openFile("./day-6/input.txt")
+	file := utils.OpenFile("./day-6/input.txt")
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
@@ -40,16 +35,6 @@ func findStartOfMarker(size int) (result int) {
 		}
 	}
 	return -1
-}
-
-// Open the input.txt file and return the content.
-func openFile(path string) *os.File {
-	file, err := os.Open(path)
-	if err != nil {
-		fmt.Printf("Cannot open file.\n")
-		panic(err)
-	}
-	return file
 }
 
 type Set struct {

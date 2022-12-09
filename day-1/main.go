@@ -1,20 +1,22 @@
-package main
+package day_1
 
 import (
 	"bufio"
-	"fmt"
-	"os"
+	"main/utils"
 	"strconv"
 )
 
-func main() {
-	fmt.Println(maxCaloriesFinder(3))
+type Day1 struct {
+}
+
+func (d Day1) PartOne() string {
+	return "Oops, I removed this part."
 }
 
 // Find the sum of the calories of the top three
 // Elves carrying the most calories as an integer.
-func maxCaloriesFinder(arrayLen int) int {
-	file := openFile()
+func (d Day1) PartTwo() string {
+	file := utils.OpenFile("./day-1/input.txt")
 	defer file.Close()
 
 	caloriesSum := 0
@@ -24,7 +26,7 @@ func maxCaloriesFinder(arrayLen int) int {
 		x, err := strconv.Atoi(scanner.Text())
 		if err != nil {
 			if caloriesSum > maxCalories[0] {
-				insertValue(&maxCalories, caloriesSum, arrayLen)
+				insertValue(&maxCalories, caloriesSum)
 			}
 			caloriesSum = 0
 			continue
@@ -35,22 +37,12 @@ func maxCaloriesFinder(arrayLen int) int {
 	for _, x := range maxCalories {
 		sum += x
 	}
-	return sum
-}
-
-// Open the input.txt file and return the content.
-func openFile() *os.File {
-	file, err := os.Open("./day-1/input.txt")
-	if err != nil {
-		fmt.Printf("Cannot open file.\n")
-		panic(err)
-	}
-	return file
+	return strconv.Itoa(sum)
 }
 
 // Insert a value `value` at the index on the
 // array `array` on the sorted array of fixed size.
-func insertValue(array *[]int, value int, arrayLen int) {
+func insertValue(array *[]int, value int) {
 	var i int
 	for i = 0; i < len(*array); i++ {
 		if value < (*array)[i] {

@@ -1,22 +1,18 @@
-package main
+package day_2
 
 import (
 	"bufio"
-	"fmt"
-	"os"
+	"main/utils"
+	"strconv"
 	"strings"
 )
 
-func main() {
-	fmt.Printf(
-		"part 1: %v\npart 2: %v\n",
-		totalScore(),
-		totalScoreV2(),
-	)
+type Day2 struct {
 }
 
-func totalScore() (sum int) {
-	file := openFile("./day-2/input.txt")
+func (d Day2) PartOne() string {
+	var sum int
+	file := utils.OpenFile("./day-2/input.txt")
 	defer file.Close()
 
 	values := map[string]int{
@@ -56,21 +52,12 @@ func totalScore() (sum int) {
 		// Else, it's a draw.
 		sum += values[player] + 3
 	}
-	return
+	return strconv.Itoa(sum)
 }
 
-// Open the input.txt file and return the content.
-func openFile(path string) *os.File {
-	file, err := os.Open(path)
-	if err != nil {
-		fmt.Printf("Cannot open file.\n")
-		panic(err)
-	}
-	return file
-}
-
-func totalScoreV2() (sum int) {
-	file := openFile("./day-2/input.txt")
+func (d Day2) PartTwo() string {
+	var sum int
+	file := utils.OpenFile("./day-2/input.txt")
 	defer file.Close()
 
 	values := map[string]int{
@@ -112,5 +99,5 @@ func totalScoreV2() (sum int) {
 
 		sum += values[loseOn[opponent]] + 6
 	}
-	return
+	return strconv.Itoa(sum)
 }

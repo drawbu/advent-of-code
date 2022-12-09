@@ -1,108 +1,87 @@
-package main
+package day_5
 
 import (
 	"bufio"
-	"fmt"
-	"os"
+	"main/utils"
 	"strconv"
 	"strings"
 )
 
-func main() {
-	fmt.Printf(
-		"part 1: %v\npart 2: %v\n",
-		moveCrates(),
-		moveCratesV2(),
-	)
+type Day5 struct {
 }
 
-func moveCrates() (result string) {
-	file := openFile("./day-5/input.txt")
+// Part 1: Move the crates to the correct stack with a
+// CrateMover 9000 and return the last letter of each stack.
+func (d Day5) PartOne() string {
+	file := utils.OpenFile("./day-5/input.txt")
 	defer file.Close()
 
-	instructions := false
 	scanner := bufio.NewScanner(file)
-	var defaultStacks []string
-	var stacks []Stack
+	crates := createCrates(getCratesText(scanner))
 	for scanner.Scan() {
-		text := scanner.Text()
-
-		// Get starting crates position
-		if !instructions {
-			if text == "" {
-				instructions = true
-				stacks = splitter(defaultStacks)
-				continue
-			}
-			defaultStacks = append(defaultStacks, text)
-			continue
-		}
-
-		// Applies instructions
-		movement := getMovement(text)
-		for i := 0; i < movement[0]; i++ {
-			element := stacks[movement[1]-1].Pop()
-			stacks[movement[2]-1].Add(element)
+		mov := getMovement(scanner.Text())
+		for i := 0; i < mov[0]; i++ {
+			crates[mov[2]-1].Add(crates[mov[1]-1].Pop())
 		}
 	}
+	return getLastLetters(crates)
+}
 
-	// Get last letter of each
-	for _, s := range stacks {
-		result += s.items[len(s.items)-1]
+// Part 2: Move the crates to the correct stack with a
+// CrateMover 9001 and return the last letter of each stack.
+func (d Day5) PartTwo() string {
+	file := utils.OpenFile("./day-5/input.txt")
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	crates := createCrates(getCratesText(scanner))
+	for scanner.Scan() {
+		mov := getMovement(scanner.Text())
+		crates[mov[2]-1].MultiAdd(crates[mov[1]-1].MultiPop(mov[0]))
+	}
+	return getLastLetters(crates)
+}
+
+// Get the crates text from the start of the input.txt file.
+func getCratesText(scanner *bufio.Scanner) (stacksText []string) {
+	for scanner.Scan() {
+		text := scanner.Text()
+		if text == "" {
+			return
+		}
+		stacksText = append(stacksText, text)
 	}
 	return
 }
 
-func splitter(crates []string) (stacks []Stack) {
-	// Create the stacks for the crates
-	letters := strings.Split(crates[len(crates)-1], " ")
+// Convert the crates text to a slice of stacks.
+func createCrates(cratesText []string) (crates []Stack) {
+	// Create the crates for the cratesText
+	letters := strings.Split(cratesText[len(cratesText)-1], " ")
 	letter, err := strconv.Atoi(letters[len(letters)-1])
 	if err != nil {
 		panic(err)
 	}
 	for i := 0; i < letter; i++ {
-		stacks = append(stacks, Stack{})
+		crates = append(crates, Stack{})
 	}
 
-	// Sort the crates in the Stacks
-	for i := range crates[:len(crates)-1] {
-		index := len(crates) - 2 - i
-		crates[index] += " "
-		for j := 0; j < len(crates[index])/4; j++ {
-			crate := string(crates[index][j*4+1])
+	// Sort the cratesText in the Stacks
+	for i := range cratesText[:len(cratesText)-1] {
+		index := len(cratesText) - 2 - i
+		cratesText[index] += " "
+		for j := 0; j < len(cratesText[index])/4; j++ {
+			crate := string(cratesText[index][j*4+1])
 			if crate == " " || crate == "" {
 				continue
 			}
-			stacks[j].Add(crate)
+			crates[j].Add(crate)
 		}
 	}
 	return
 }
 
-type Stack struct {
-	items []string
-}
-
-func (d *Stack) Add(element string) {
-	d.items = append(d.items, element)
-}
-
-func (d *Stack) Pop() (element string) {
-	element = d.items[len(d.items)-1]
-	d.items = d.items[:len(d.items)-1]
-	return
-}
-
-// Open the input.txt file and return the content.
-func openFile(path string) *os.File {
-	file, err := os.Open(path)
-	if err != nil {
-		fmt.Printf("Cannot open file.\n")
-		panic(err)
-	}
-	return file
-}
-
+// Get the movement as a slice of int from a text.
 func getMovement(text string) [3]int {
 	move, err := strconv.Atoi(strings.Replace(text[5:7], " ", "", 1))
 	if err != nil {
@@ -119,45 +98,38 @@ func getMovement(text string) [3]int {
 	return [3]int{move, from, to}
 }
 
-func moveCratesV2() (result string) {
-	file := openFile("./day-5/input.txt")
-	defer file.Close()
-
-	instructions := false
-	scanner := bufio.NewScanner(file)
-	var defaultStacks []string
-	var stacks []Stack
-	for scanner.Scan() {
-		text := scanner.Text()
-
-		// Get starting crates position
-		if !instructions {
-			if text == "" {
-				instructions = true
-				stacks = splitter(defaultStacks)
-				continue
-			}
-			defaultStacks = append(defaultStacks, text)
-			continue
-		}
-
-		// Applies instructions
-		movement := getMovement(text)
-		elements := stacks[movement[1]-1].MultiPop(movement[0])
-		stacks[movement[2]-1].MultiAdd(elements)
-	}
-
-	// Get last letter of each
-	for _, s := range stacks {
+// Get the last letter of each stack.
+func getLastLetters(crates []Stack) (result string) {
+	for _, s := range crates {
 		result += s.items[len(s.items)-1]
 	}
 	return
 }
 
+// Stack is a stack of strings.
+// You can add and remove elements only from the top.
+type Stack struct {
+	items []string
+}
+
+// Add an element to the top of the stack.
+func (d *Stack) Add(element string) {
+	d.items = append(d.items, element)
+}
+
+// Pop an element from the top of the stack and return it.
+func (d *Stack) Pop() (element string) {
+	element = d.items[len(d.items)-1]
+	d.items = d.items[:len(d.items)-1]
+	return
+}
+
+// MultiAdd adds multiple elements to the top of the stack.
 func (d *Stack) MultiAdd(elements []string) {
 	d.items = append(d.items, elements...)
 }
 
+// MultiPop removes multiple elements from the top of the stack and return them.
 func (d *Stack) MultiPop(number int) (elements []string) {
 	elements = d.items[len(d.items)-number : len(d.items)]
 	d.items = d.items[:len(d.items)-number]

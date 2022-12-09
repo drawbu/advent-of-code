@@ -1,22 +1,19 @@
-package main
+package day_3
 
 import (
 	"bufio"
 	"fmt"
-	"os"
+	"main/utils"
+	"strconv"
 	"strings"
 )
 
-func main() {
-	fmt.Printf(
-		"part 1: %v\npart 2: %v\n",
-		totalPriorities(),
-		totalPrioritiesV2(),
-	)
+type Day3 struct {
 }
 
-func totalPriorities() (sum int) {
-	file := openFile("./day-3/input.txt")
+func (d Day3) PartOne() string {
+	var sum int
+	file := utils.OpenFile("./day-3/input.txt")
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
@@ -28,17 +25,30 @@ func totalPriorities() (sum int) {
 		}
 		sum += whatsThePriority(e)
 	}
-	return
+	return strconv.Itoa(sum)
 }
 
-// Open the input.txt file and return the content.
-func openFile(path string) *os.File {
-	file, err := os.Open(path)
-	if err != nil {
-		fmt.Printf("Cannot open file.\n")
-		panic(err)
+func (d Day3) PartTwo() string {
+	var sum int
+	file := utils.OpenFile("./day-3/input.txt")
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		var group []string
+		group = append(group, scanner.Text())
+		scanner.Scan()
+		group = append(group, scanner.Text())
+		scanner.Scan()
+		group = append(group, scanner.Text())
+
+		e, err := gimmeTheBadge(group)
+		if err != nil {
+			panic(err)
+		}
+		sum += whatsThePriority(e)
 	}
-	return file
+	return strconv.Itoa(sum)
 }
 
 func findElements(text string) (element int32, err error) {
@@ -64,28 +74,6 @@ func whatsThePriority(element int32) int {
 		return int(element) - 96
 	}
 	return int(element) - 64 + 26
-}
-
-func totalPrioritiesV2() (sum int) {
-	file := openFile("./day-3/input.txt")
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		var group []string
-		group = append(group, scanner.Text())
-		scanner.Scan()
-		group = append(group, scanner.Text())
-		scanner.Scan()
-		group = append(group, scanner.Text())
-
-		e, err := gimmeTheBadge(group)
-		if err != nil {
-			panic(err)
-		}
-		sum += whatsThePriority(e)
-	}
-	return
 }
 
 func gimmeTheBadge(group []string) (badge int32, err error) {

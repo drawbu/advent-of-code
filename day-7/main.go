@@ -1,36 +1,32 @@
-package main
+package day_7
 
 import (
 	"bufio"
-	"fmt"
+	"main/utils"
 	"os"
 	"strconv"
 	"strings"
 )
 
-func main() {
-	fmt.Printf(
-		"part 1: %v\npart 2: %v\n",
-		partOne(),
-		partTwo(),
-	)
+type Day7 struct {
 }
 
 // Part 1: get the sum of the size of directories with a size < 100_000.
-func partOne() (result int) {
-	fs := getFileSystem(*openFile("./day-7/input.txt"))
+func (d Day7) PartOne() string {
+	fs := getFileSystem(*utils.OpenFile("day-7/input.txt"))
 
+	var result int
 	for _, size := range fs {
 		if size <= 100000 {
 			result += size
 		}
 	}
-	return
+	return strconv.Itoa(result)
 }
 
 // Part 2: find the best directory to remove to have a total size < 40_000_000.
-func partTwo() int {
-	fs := getFileSystem(*openFile("./day-7/input.txt"))
+func (d Day7) PartTwo() string {
+	fs := getFileSystem(*utils.OpenFile("day-7/input.txt"))
 
 	bestDir := "/"
 	freeSpaceNeeded := fs["/"] - 40_000_000
@@ -41,17 +37,7 @@ func partTwo() int {
 			}
 		}
 	}
-	return fs[bestDir]
-}
-
-// Open the input.txt file and return the content.
-func openFile(path string) *os.File {
-	file, err := os.Open(path)
-	if err != nil {
-		fmt.Printf("Cannot open file.\n")
-		panic(err)
-	}
-	return file
+	return strconv.Itoa(fs[bestDir])
 }
 
 // Get the file system as a map of path -> size.

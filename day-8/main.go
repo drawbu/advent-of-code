@@ -1,22 +1,19 @@
-package main
+package day_8
 
 import (
 	"bufio"
-	"fmt"
+	"main/utils"
 	"os"
+	"strconv"
 )
 
-func main() {
-	fmt.Printf(
-		"part 1: %v\npart 2: %v\n",
-		partOne(),
-		partTwo(),
-	)
+type Day8 struct {
 }
 
 // Part 1: find the number of trees visible from the borders.
-func partOne() (result int) {
-	trees := getTreeList(*openFile("./day-8/input.txt"))
+func (d Day8) PartOne() string {
+	var result int
+	trees := getTreeList(*utils.OpenFile("day-8/input.txt"))
 	result += trees.size[0]*2 + trees.size[1]*2 - 4
 
 	for trees.scan(1) {
@@ -72,12 +69,13 @@ func partOne() (result int) {
 			continue
 		}
 	}
-	return
+	return strconv.Itoa(result)
 }
 
 // Part 2: find the best location to see the most trees.
-func partTwo() (result int) {
-	trees := getTreeList(*openFile("./day-8/input.txt"))
+func (d Day8) PartTwo() string {
+	var result int
+	trees := getTreeList(*utils.OpenFile("day-8/input.txt"))
 	bestTree := [2]int{0, 0}
 
 	for trees.scan(0) {
@@ -129,17 +127,7 @@ func partTwo() (result int) {
 			bestTree[1] = trees.y
 		}
 	}
-	return
-}
-
-// Open the input.txt file and return the content.
-func openFile(path string) *os.File {
-	file, err := os.Open(path)
-	if err != nil {
-		fmt.Printf("Cannot open file.\n")
-		panic(err)
-	}
-	return file
+	return strconv.Itoa(result)
 }
 
 // Get the file system as a map of path -> size.

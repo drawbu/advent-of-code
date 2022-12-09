@@ -1,23 +1,18 @@
-package main
+package day_4
 
 import (
 	"bufio"
-	"fmt"
-	"os"
+	"main/utils"
 	"strconv"
 	"strings"
 )
 
-func main() {
-	fmt.Printf(
-		"part 1: %v\npart 2: %v\n",
-		findOverlap(),
-		findOverlapV2(),
-	)
+type Day4 struct {
 }
 
-func findOverlap() (result int) {
-	file := openFile("./day-4/input.txt")
+func (d Day4) PartOne() string {
+	var result int
+	file := utils.OpenFile("./day-4/input.txt")
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
@@ -29,7 +24,24 @@ func findOverlap() (result int) {
 			result++
 		}
 	}
-	return
+	return strconv.Itoa(result)
+}
+
+func (d Day4) PartTwo() string {
+	var result int
+	file := utils.OpenFile("./day-4/input.txt")
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		text := strings.Split(scanner.Text(), ",")
+		section1 := text[0]
+		section2 := text[1]
+		if doesThisPairOverlapAtAll(section1, section2) {
+			result++
+		}
+	}
+	return strconv.Itoa(result)
 }
 
 func doesThisPairFullyOverlap(section1 string, section2 string) bool {
@@ -49,32 +61,6 @@ func getActualId(section string) [2]int {
 	digit1, _ := strconv.Atoi(id[0])
 	digit2, _ := strconv.Atoi(id[1])
 	return [2]int{digit1, digit2}
-}
-
-// Open the input.txt file and return the content.
-func openFile(path string) *os.File {
-	file, err := os.Open(path)
-	if err != nil {
-		fmt.Printf("Cannot open file.\n")
-		panic(err)
-	}
-	return file
-}
-
-func findOverlapV2() (result int) {
-	file := openFile("./day-4/input.txt")
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		text := strings.Split(scanner.Text(), ",")
-		section1 := text[0]
-		section2 := text[1]
-		if doesThisPairOverlapAtAll(section1, section2) {
-			result++
-		}
-	}
-	return
 }
 
 func doesThisPairOverlapAtAll(section1 string, section2 string) bool {
