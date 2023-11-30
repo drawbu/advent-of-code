@@ -20,13 +20,19 @@
 
         formatter = pkgs.nixpkgs-fmt;
         packages = {
-          aoc2022 = pkgs.buildGoModule {
-            pname = "main";
+          aoc2022 = pkgs.buildGoModule rec {
+            name = "aoc2022";
             version = "1.0.0";
+            src = ./2022;
 
             vendorHash = null;
-
-            src = ./2022;
+            buildPhase = ''
+              ${pkgs.go}/bin/go build -o ${name}
+            '';
+            installPhase = ''
+              mkdir -p $out/bin
+              cp ${name} $out/bin/
+            '';
           };
         };
       });
