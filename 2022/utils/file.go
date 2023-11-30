@@ -7,7 +7,7 @@ import (
 
 // OpenFile open the input file and return the content.
 func OpenFile(fileName string) *os.File {
-	file, err := os.Open(fileName)
+	file, err := os.Open("./2022/" + fileName)
 	if err != nil {
 		fmt.Printf("Cannot open file.\n")
 		panic(err)
