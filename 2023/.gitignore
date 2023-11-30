@@ -1,0 +1,24 @@
+# Binaries
+*.out
+aoc2023
+unit_tests
+asan
+
+# Compilation
+.build/
+*.a
+*.o
+include/my.h
+include/colors.h
+
+# Editors junk
+*~
+\#*#
+*.swp
+*.swo
+
+# Reports
+core.*
+*.log
+*.gcda
+*.gcno
