@@ -14,7 +14,7 @@ CFLAGS += -iquote ./.
 LDFLAGS :=
 
 # ↓ Sources
-SRC :=
+SRC := day01/source.c
 
 TEST_SRC := $(SRC)
 
