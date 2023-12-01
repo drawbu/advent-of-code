@@ -8,12 +8,9 @@
 
 void day01_part1(char const *filename)
 {
-    FILE *fp = fopen(filename, "r");
-    char *line;
-    size_t len = 0;
     int sum = 0;
 
-    while (getline(&line, &len, fp) != -1) {
+    READFILE(filename, {
         int n;
         char *ptr = line;
         for (; !isdigit(*ptr) && *ptr != '\0'; ptr++);
@@ -28,7 +25,7 @@ void day01_part1(char const *filename)
         }
         n = (n * 10) + tmp;
         sum += n;
-    }
+    })
     printf("%d\n", sum);
 }
 
@@ -62,12 +59,9 @@ int get_nbr(char const *str)
 
 void day01_part2(char const *filename)
 {
-    FILE *fp = fopen(filename, "r");
-    char *line;
-    size_t len = 0;
     int sum = 0;
 
-    while (getline(&line, &len, fp) != -1) {
+    READFILE(filename, {
         int n;
         char *ptr = line;
         int tmp = 0;
@@ -89,6 +83,6 @@ void day01_part2(char const *filename)
         }
         n = (n * 10) + tmp;
         sum += n;
-    }
+    })
     printf("%d\n", sum);
 }
