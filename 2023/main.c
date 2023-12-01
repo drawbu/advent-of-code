@@ -10,8 +10,9 @@ int main(int argc, char **argv)
         if (argc > 1 && strcmp(argv[1], SOLUTIONS[i].name) != 0)
             continue;
         if (argc == 1)
-            printf("%s:\n", SOLUTIONS[i].name);
+            printf("%s: \x1b[33m", SOLUTIONS[i].name);
         SOLUTIONS[i].func(SOLUTIONS[i].input);
+        printf("\x1b[0m");
     }
     return EXIT_SUCCESS;
 }
