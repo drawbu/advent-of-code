@@ -1,6 +1,6 @@
 NAME := aoc2023
+ASAN_NAME := asan
 TEST_NAME := unit_tests
-ASAN_NAME := asan_tests
 
 # ↓ Compilation configuration
 CC := gcc -std=gnu11
@@ -24,14 +24,14 @@ SRC += main.c
 # ↓ Object files
 BUILD_DIR := .build
 OBJ := $(SRC:%.c=$(BUILD_DIR)/source/%.o)
-TEST_OBJ := $(TEST_SRC:%.c=$(BUILD_DIR)/tests/%.o)
 ASAN_OBJ := $(SRC:%.c=$(BUILD_DIR)/asan/%.o)
+TEST_OBJ := $(TEST_SRC:%.c=$(BUILD_DIR)/tests/%.o)
 
 # ↓ Dependencies files
 DEPS_FLAGS := -MMD -MP
 DEPS := $(OBJ:.o=.d)
-TEST_DEPS := $(TEST_OBJ:.o=.d)
 ASAN_DEPS := $(ASAN_OBJ:.o=.d)
+TEST_DEPS := $(TEST_OBJ:.o=.d)
 
 # ↓ Compiling
 $(BUILD_DIR)/source/%.o: %.c
@@ -43,23 +43,6 @@ $(NAME): $(OBJ)
 
 .PHONY: $(NAME)
 
-# ↓ Unit tests
-$(BUILD_DIR)/tests/%.o: %.c
-	@ mkdir -p $(dir $@)
-	$(CC) -o $@ -c $< $(CFLAGS) $(DEPS_FLAGS)
-
-ifneq ($(NO_COV), 1)
-$(TEST_NAME): CFLAGS += -g3
-endif
-$(TEST_NAME): CFLAGS += -lcriterion
-$(TEST_NAME): $(TEST_OBJ)
-	$(CC) -o $@ $(TEST_OBJ) $(CFLAGS) $(LDFLAGS)
-
-tests_run: fclean $(TEST_NAME)
-	@ ./$(TEST_NAME)
-
-.PHONY: $(TEST_NAME) tests_run
-
 # ↓ Asan
 $(BUILD_DIR)/asan/%.o: %.c
 	@ mkdir -p $(dir $@)
@@ -70,6 +53,20 @@ $(ASAN_NAME): $(ASAN_OBJ)
 	$(CC) -o $@ $(ASAN_OBJ) $(CFLAGS) $(LDFLAGS)
 
 .PHONY: $(ASAN_NAME)
+
+# ↓ Unit tests
+$(BUILD_DIR)/tests/%.o: %.c
+	@ mkdir -p $(dir $@)
+	$(CC) -o $@ -c $< $(CFLAGS) $(DEPS_FLAGS)
+
+$(TEST_NAME): CFLAGS += -lcriterion -g3
+$(TEST_NAME): $(TEST_OBJ)
+	$(CC) -o $@ $(TEST_OBJ) $(CFLAGS) $(LDFLAGS)
+
+tests_run: fclean $(TEST_NAME)
+	@ ./$(TEST_NAME)
+
+.PHONY: $(TEST_NAME) tests_run
 
 # ↓ Cleaning
 clean:
@@ -87,5 +84,5 @@ re: fclean
 .PHONY: re
 
 -include $(DEPS)
--include $(TEST_DEPS)
 -include $(ASAN_DEPS)
+-include $(TEST_DEPS)

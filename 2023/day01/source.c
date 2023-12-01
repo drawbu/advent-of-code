@@ -8,9 +8,10 @@
 
 void day01_part1(char const *filename)
 {
+    char *line;
     int sum = 0;
 
-    READFILE(filename, {
+    READFILE(filename, line, {
         int n;
         char *ptr = line;
         for (; !isdigit(*ptr) && *ptr != '\0'; ptr++);
@@ -59,9 +60,10 @@ int get_nbr(char const *str)
 
 void day01_part2(char const *filename)
 {
+    char *line;
     int sum = 0;
 
-    READFILE(filename, {
+    READFILE(filename, line, {
         int n;
         char *ptr = line;
         int tmp = 0;

@@ -12,13 +12,14 @@
         SOL(day_num, full, 1), \
         SOL(day_num, full, 2)
 
-    #define READFILE(filename, code)           \
-        FILE *fp = fopen(filename, "r");       \
-        char *line;                            \
-        size_t len = 0;                        \
-        while (getline(&line, &len, fp) != -1) \
-        code                                   \
-        fclose(fp);
+    #define READFILE(__filename, __linebuf, code)       \
+        FILE *__fp = fopen(__filename, "r");            \
+        size_t __len = BUFSIZ;                          \
+        __linebuf = malloc(BUFSIZ);                     \
+        while (getline(&__linebuf, &__len, __fp) != -1) \
+        code                                            \
+        free(__linebuf);                                \
+        fclose(__fp);
 
 typedef struct {
     char *name;
