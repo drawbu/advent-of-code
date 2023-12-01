@@ -17,6 +17,7 @@ LDFLAGS :=
 SRC := day01/source.c
 
 TEST_SRC := $(SRC)
+TEST_SRC += tests.c
 
 SRC += main.c
 
