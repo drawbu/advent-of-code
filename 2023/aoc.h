@@ -14,8 +14,17 @@
 
     #define READFILE(__filename, __linebuf, code)       \
         FILE *__fp = fopen(__filename, "r");            \
+        if (__fp == NULL) {                             \
+            perror("fopen");                            \
+            return;                                     \
+        }                                               \
         size_t __len = BUFSIZ;                          \
         __linebuf = malloc(BUFSIZ);                     \
+        if (__linebuf == NULL) {                        \
+            perror("malloc");                           \
+            fclose(__fp);                               \
+            return;                                     \
+        }                                               \
         while (getline(&__linebuf, &__len, __fp) != -1) \
         code                                            \
         free(__linebuf);                                \
