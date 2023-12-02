@@ -21,8 +21,8 @@ The structure of the project:
 To run my solutions:
 ```sh
 make
-./aoc2023             // run all
-./aoc2023 day08-part2 // run a specific solution
+./aoc2023             # run all
+./aoc2023 day08-part2 # run a specific solution
 ```
 
 ## 2022 - Go
