@@ -4,7 +4,7 @@ My solutions for the [advent of code](https://adventofcode.com).
 
 ## 2023 - C language
 
-Completed: `1/25`.
+Completed: `2/25`.
 
 The structure of the project:
 ```sh

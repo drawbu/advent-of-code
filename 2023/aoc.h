@@ -30,8 +30,12 @@ typedef struct {
 void day01_part1(char const *filename);
 void day01_part2(char const *filename);
 
+void day02_part1(char const *filename);
+void day02_part2(char const *filename);
+
 static const solution_t SOLUTIONS[] = {
     DAY(01),
+    DAY(02),
     { 0 },
 };
 
