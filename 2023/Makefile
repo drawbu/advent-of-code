@@ -14,8 +14,7 @@ CFLAGS += -iquote ./.
 LDFLAGS :=
 
 # ↓ Sources
-SRC := day01/source.c
-SRC += day02/source.c
+SRC := $(wildcard day*/source.c)
 
 TEST_SRC := $(SRC)
 TEST_SRC += tests.c
