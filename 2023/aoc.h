@@ -2,6 +2,8 @@
     #define AOC_H_
 
     #include <stddef.h>
+    #include <stdio.h>
+    #include <stdlib.h>
 
     #define SOL(day_num, type, part_num) {                \
         .name = "day" #day_num "-" "part" #part_num,      \
@@ -12,18 +14,18 @@
         SOL(day_num, full, 1), \
         SOL(day_num, full, 2)
 
-    #define READFILE(__filename, __linebuf, code)       \
+    #define READFILE(__filename, __linebuf, __err, code)       \
         FILE *__fp = fopen(__filename, "r");            \
         if (__fp == NULL) {                             \
             perror("fopen");                            \
-            return;                                     \
+            return __err;                               \
         }                                               \
         size_t __len = BUFSIZ;                          \
         __linebuf = malloc(BUFSIZ);                     \
         if (__linebuf == NULL) {                        \
             perror("malloc");                           \
             fclose(__fp);                               \
-            return;                                     \
+            return __err;                               \
         }                                               \
         while (getline(&__linebuf, &__len, __fp) != -1) \
         code                                            \

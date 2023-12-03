@@ -37,7 +37,7 @@ void day02_part1(char const *filename)
     size_t line_num = 0;
     size_t result = 0;
 
-    READFILE(filename, line, {
+    READFILE(filename, line,, {
         char *ptr = line;
         bool valid = true;
         for (; *ptr && *ptr != ':'; ptr++);
@@ -81,7 +81,7 @@ void day02_part2(char const *filename)
     char *line;
     size_t result = 0;
 
-    READFILE(filename, line, {
+    READFILE(filename, line,, {
         char *ptr = line;
         size_t cubes[3] = { 0 };
         for (; *ptr && *ptr != ':'; ptr++);

@@ -11,7 +11,7 @@ void day01_part1(char const *filename)
     char *line;
     int sum = 0;
 
-    READFILE(filename, line, {
+    READFILE(filename, line,, {
         char *ptr = line;
         for (; !isdigit(*ptr) && *ptr != '\0'; ptr++);
         if (*ptr == '\0')
@@ -44,7 +44,7 @@ void day01_part2(char const *filename)
     char *line;
     int sum = 0;
 
-    READFILE(filename, line, {
+    READFILE(filename, line,, {
         int tmp = 0;
         char *ptr = line;
         for (; *ptr != '\0'; ptr++) {
