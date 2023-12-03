@@ -11,7 +11,7 @@ int main(int argc, char **argv)
             continue;
         if (argc == 1)
             printf("%s: \x1b[33m", SOLUTIONS[i].name);
-        SOLUTIONS[i].func(SOLUTIONS[i].input);
+        SOLUTIONS[i].func((argc > 2) ? argv[2] : SOLUTIONS[i].input);
         printf("\x1b[0m");
     }
     return EXIT_SUCCESS;
