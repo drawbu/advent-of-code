@@ -4,6 +4,7 @@
     #include <stddef.h>
     #include <stdio.h>
     #include <stdlib.h>
+#include <string.h>
 
     #define SOL(day_num, type, part_num) {                \
         .name = "day" #day_num "-" "part" #part_num,      \
@@ -32,6 +33,29 @@
         free(__linebuf);                                \
         fclose(__fp);
 
+static inline
+char **get_full_file(char const *filename)
+{
+    char **lines = NULL;
+    void *ptr = NULL;
+    char *line;
+    int i = 0;
+
+    READFILE(filename, line, NULL, {
+        ptr = realloc(lines, (i + 2) * sizeof(char *));
+        if (ptr == NULL)
+            break;
+        lines = ptr;
+        lines[i] = malloc(strlen(line) + 1);
+        if (lines[i] == NULL)
+            break;
+        lines[i + 1] = NULL;
+        strcpy(lines[i], line);
+        i += 1;
+    })
+    return lines;
+}
+
 typedef struct {
     char *name;
     char *input;
@@ -44,9 +68,13 @@ void day01_part2(char const *filename);
 void day02_part1(char const *filename);
 void day02_part2(char const *filename);
 
+void day03_part1(char const *filename);
+void day03_part2(char const *filename);
+
 static const solution_t SOLUTIONS[] = {
     DAY(01),
     DAY(02),
+    DAY(03),
     { 0 },
 };
 

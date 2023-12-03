@@ -18,3 +18,7 @@ AOC_TEST(01, 2, test2, 281)
 // Day 02
 AOC_TEST(02, 1, test, 8)
 AOC_TEST(02, 2, test, 2286)
+
+// Day 03
+AOC_TEST(03, 1, test, 4361)
+AOC_TEST(03, 2, test, 467835)
