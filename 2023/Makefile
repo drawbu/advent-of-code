@@ -11,7 +11,7 @@ CFLAGS += -Waggregate-return -Wcast-qual
 CFLAGS += -Wunreachable-code
 CFLAGS += -U_FORTIFY_SOURCE
 CFLAGS += -iquote ./.
-LDFLAGS :=
+LDFLAGS := -lm
 
 # ↓ Sources
 SRC := $(wildcard day*/source.c)

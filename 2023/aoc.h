@@ -4,7 +4,7 @@
     #include <stddef.h>
     #include <stdio.h>
     #include <stdlib.h>
-#include <string.h>
+    #include <string.h>
 
     #define SOL(day_num, type, part_num) {                \
         .name = "day" #day_num "-" "part" #part_num,      \
@@ -71,10 +71,14 @@ void day02_part2(char const *filename);
 void day03_part1(char const *filename);
 void day03_part2(char const *filename);
 
+void day04_part1(char const *filename);
+void day04_part2(char const *filename);
+
 static const solution_t SOLUTIONS[] = {
     DAY(01),
     DAY(02),
     DAY(03),
+    DAY(04),
     { 0 },
 };
 
