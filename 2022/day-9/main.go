@@ -3,7 +3,7 @@ package day_9
 import (
 	"bufio"
 	"fmt"
-	"main/utils"
+	"aoc2022/utils"
 	"math"
 	"strconv"
 	"strings"

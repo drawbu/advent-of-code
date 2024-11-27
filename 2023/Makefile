@@ -33,6 +33,11 @@ DEPS := $(OBJ:.o=.d)
 ASAN_DEPS := $(ASAN_OBJ:.o=.d)
 TEST_DEPS := $(TEST_OBJ:.o=.d)
 
+
+DEFAULT_GOAL := all
+.PHONY: all
+all: $(NAME)
+
 # ↓ Compiling
 $(BUILD_DIR)/source/%.o: %.c
 	@ mkdir -p $(dir $@)
@@ -41,7 +46,6 @@ $(BUILD_DIR)/source/%.o: %.c
 $(NAME): $(OBJ)
 	$(CC) -o $@ $(OBJ) $(CFLAGS) $(LDFLAGS)
 
-.PHONY: $(NAME)
 
 # ↓ Asan
 $(BUILD_DIR)/asan/%.o: %.c
@@ -52,36 +56,41 @@ $(ASAN_NAME): CFLAGS += -fsanitize=address,leak,undefined -g3
 $(ASAN_NAME): $(ASAN_OBJ)
 	$(CC) -o $@ $(ASAN_OBJ) $(CFLAGS) $(LDFLAGS)
 
-.PHONY: $(ASAN_NAME)
-
-# ↓ Unit tests
 $(BUILD_DIR)/tests/%.o: %.c
 	@ mkdir -p $(dir $@)
 	$(CC) -o $@ -c $< $(CFLAGS) $(DEPS_FLAGS)
 
+
+# ↓ Unit tests
 $(TEST_NAME): CFLAGS += -lcriterion -g3
 $(TEST_NAME): $(TEST_OBJ)
 	$(CC) -o $@ $(TEST_OBJ) $(CFLAGS) $(LDFLAGS)
 
+.PHONY: tests_run
 tests_run: fclean $(TEST_NAME)
 	@ ./$(TEST_NAME)
 
-.PHONY: $(TEST_NAME) tests_run
 
 # ↓ Cleaning
+.PHONY: clean
 clean:
 	$(RM) $(OBJ) $(TEST_OBJ) $(ASAN_OBJ)
 
+.PHONY: fclean
 fclean: clean
 	$(RM) $(NAME) $(TEST_NAME) $(ASAN_NAME)
 	$(RM) -r $(BUILD_DIR)
 
-.PHONY: clean fclean
 
-re: fclean
-	@ $(MAKE) -s -C .
-
+# ↓ Meta
 .PHONY: re
+.NOTPARALLEL: re
+re: fclean all
+
+.PHONY: install
+install: $(NAME)
+	mkdir -p $(PREFIX)/bin
+	install -m 755 $(NAME) $(PREFIX)/bin
 
 -include $(DEPS)
 -include $(ASAN_DEPS)

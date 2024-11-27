@@ -2,7 +2,7 @@ package day_8
 
 import (
 	"bufio"
-	"main/utils"
+	"aoc2022/utils"
 	"os"
 	"strconv"
 )

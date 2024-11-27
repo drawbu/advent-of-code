@@ -1,17 +1,17 @@
 package main
 
 import (
+	"aoc2022/day-1"
+	"aoc2022/day-2"
+	"aoc2022/day-3"
+	"aoc2022/day-4"
+	"aoc2022/day-5"
+	"aoc2022/day-6"
+	"aoc2022/day-7"
+	"aoc2022/day-8"
+	"aoc2022/day-9"
+	"aoc2022/utils"
 	"fmt"
-	"main/day-1"
-	"main/day-2"
-	"main/day-3"
-	"main/day-4"
-	"main/day-5"
-	"main/day-6"
-	"main/day-7"
-	"main/day-8"
-	"main/day-9"
-	"main/utils"
 )
 
 func main() {

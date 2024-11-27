@@ -1,74 +1,59 @@
 {
-  description = "Advent of code";
-
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, utils }:
-    utils.lib.eachDefaultSystem (system:
+  outputs =
+    { ... }@inputs:
+    inputs.utils.lib.eachDefaultSystem (
+      system:
       let
-        pkgs = nixpkgs.legacyPackages.${system};
-        aoc2022 = with pkgs; [ go ];
-        aoc2023 = rec {
-          cc = pkgs.gcc12;
-          deps = with pkgs; [
-            glibc
-            gnumake
-            criterion
-          ] ++ [ cc ];
-          shell = with pkgs; [
-            ltrace
-            valgrind
-            python311Packages.compiledb
-            man-pages
-            man-pages-posix
-            gdb
-          ] ++ deps;
-        };
+        pkgs = import inputs.nixpkgs { inherit system; };
+        inherit (pkgs) lib;
       in
-      {
-        devShells.default = pkgs.mkShell {
-          packages = aoc2022 ++ aoc2023.shell;
+      rec {
+        formatter = pkgs.nixfmt-rfc-style;
+
+        devShells = {
+          "2022" = pkgs.mkShell {
+            inputsFrom = [ packages."2022" ];
+          };
+
+          "2023" = pkgs.mkShell {
+            inputsFrom = [ packages."2023" ];
+            packages =
+              with pkgs;
+              lib.optionals stdenv.isLinux [
+                gdb
+                ltrace
+                valgrind
+              ];
+          };
         };
 
-        formatter = pkgs.nixpkgs-fmt;
         packages = {
-          aoc2022 = pkgs.buildGoModule rec {
+          "2022" = pkgs.buildGoModule {
             name = "aoc2022";
             version = "1.0.0";
             src = ./2022;
-
             vendorHash = null;
-            buildPhase = ''
-              ${pkgs.go}/bin/go build -o ${name}
-            '';
-            installPhase = ''
-              mkdir -p $out/bin
-              cp ${name} $out/bin/
-            '';
           };
 
-          aoc2023 = pkgs.stdenv.mkDerivation rec {
+          "2023" = pkgs.gcc12Stdenv.mkDerivation {
             name = "aoc2023";
             src = ./2023;
 
-            makeFlags = [ "CC=${aoc2023.cc}/bin/gcc" ];
-            buildInputs = aoc2023.deps;
+            buildInputs = with pkgs; [ criterion ];
 
-            hardeningDisable = [ "format" "fortify" ];
+            hardeningDisable = [
+              "format"
+              "fortify"
+            ];
+            env.PREFIX = "${placeholder "out"}";
             enableParallelBuilding = true;
-
-          buildPhase = ''
-            make ${name}
-          '';
-
-          installPhase = ''
-            mkdir -p $out/bin
-            cp ${name} $out/bin
-          '';
           };
         };
-      });
+      }
+    );
 }

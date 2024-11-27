@@ -31,3 +31,14 @@ Completed: `9/25`.
 
 I made it to the day 9, and choose to discover Go with it. Pretty fun
 experience.
+
+
+## :snowflake: Nix
+
+I use Nix to manage my dev environments, so you can build and run all years
+binaries with nix:
+```sh
+# $YEAR = 2022, 2023, 2024, etc.
+nix run github:drawbu/advent-of-code#${YEAR}     # run solutions
+nix develop github:drawbu/advent-of-code#${YEAR} # enter dev env
+```
