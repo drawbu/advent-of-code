@@ -30,6 +30,14 @@
                 valgrind
               ];
           };
+
+          "2024" = pkgs.mkShell {
+            inputsFrom = [ packages."2024" ];
+            packages = with pkgs; [ zig ];
+            shellHook = ''
+              export ZIG_GLOBAL_CACHE_DIR=$out/2024/.cache
+            '';
+          };
         };
 
         packages = {
@@ -52,6 +60,12 @@
             ];
             env.PREFIX = "${placeholder "out"}";
             enableParallelBuilding = true;
+          };
+
+          "2024" = pkgs.zigStdenv.mkDerivation {
+            name = "aoc2024";
+            src = ./2024;
+            nativeBuildInputs = with pkgs; [ zig.hook ];
           };
         };
       }

@@ -15,4 +15,4 @@ trim_trailing_whitespace = true
 indent_style = tab
 
 [{*.nix,*.yml}]
-tab_width = 2
+indent_size = 2
