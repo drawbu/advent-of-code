@@ -2,9 +2,15 @@
 
 My solutions for the [advent of code](https://adventofcode.com).
 
-## 2023 - C language
 
-Completed: `2/25`.
+## 2024 - :zap: Zig
+
+Lets learn Zig this time!
+
+
+## 2023 - C
+
+Completed: `6/25`.
 
 The structure of the project:
 ```sh
@@ -24,6 +30,7 @@ make
 ./aoc2023             # run all
 ./aoc2023 day08-part2 # run a specific solution
 ```
+
 
 ## 2022 - Go
 
