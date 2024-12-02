@@ -2,9 +2,7 @@ const std = @import("std");
 const utils = @import("utils.zig");
 
 pub fn main() !void {
-    const stdout_file = std.io.getStdOut().writer();
-    var bw = std.io.bufferedWriter(stdout_file);
-    const stdout = bw.writer();
+    const stdout = std.io.getStdOut().writer();
 
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
@@ -20,6 +18,4 @@ pub fn main() !void {
             try stdout.print("day{d:0>2}: skipped\n", .{i});
         }
     }
-
-    try bw.flush();
 }

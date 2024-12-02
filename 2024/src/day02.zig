@@ -26,10 +26,8 @@ fn bruteforce_part2(numbers: *const std.ArrayList(i32)) !bool {
 }
 
 pub fn solution(alloc: std.mem.Allocator) !utils.AOCSolution {
+    var file = std.io.fixedBufferStream(@embedFile("input/day02.txt"));
     var sol = utils.AOCSolution{ .part1 = 0, .part2 = 0 };
-
-    var file = try std.fs.cwd().openFile("input/day02.txt", .{});
-    defer file.close();
 
     var buf: [1024]u8 = undefined;
     var reader = file.reader();
@@ -38,10 +36,8 @@ pub fn solution(alloc: std.mem.Allocator) !utils.AOCSolution {
         defer numbers.deinit();
 
         var it = std.mem.split(u8, line, " ");
-        while (it.next()) |x| {
-            const num = try std.fmt.parseInt(i32, x, 10);
-            try numbers.append(num);
-        }
+        while (it.next()) |n|
+            try numbers.append(try std.fmt.parseInt(i32, n, 10));
 
         if (is_valid(numbers.items))
             sol.part1 += 1;
