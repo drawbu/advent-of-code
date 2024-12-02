@@ -11,7 +11,7 @@ fn count(comptime T: type, array: []T, value: T) usize {
     return result;
 }
 
-pub fn day01(alloc: std.mem.Allocator) !utils.AOCSolution {
+pub fn solution(alloc: std.mem.Allocator) !utils.AOCSolution {
     var file = try std.fs.cwd().openFile("input/day01.txt", .{});
     defer file.close();
 
@@ -34,13 +34,10 @@ pub fn day01(alloc: std.mem.Allocator) !utils.AOCSolution {
     std.mem.sort(u31, leftColumn.items, {}, comptime std.sort.asc(u31));
     std.mem.sort(u31, rightColumn.items, {}, comptime std.sort.asc(u31));
 
-    var part1: usize = 0;
+    var sol = utils.AOCSolution{ .part1 = 0, .part2 = 0 };
     for (leftColumn.items, rightColumn.items) |left, right|
-        part1 += @abs(@as(i32, left) - @as(i32, right));
-
-    var part2: usize = 0;
+        sol.part1 += @abs(@as(i32, left) - @as(i32, right));
     for (leftColumn.items) |item|
-        part2 += item * count(u31, rightColumn.items, item);
-
-    return .{ .part1 = part1, .part2 = part2 };
+        sol.part2 += item * count(u31, rightColumn.items, item);
+    return sol;
 }
