@@ -51,3 +51,10 @@ pub fn solution(alloc: std.mem.Allocator) !utils.AOCSolution {
 
     return sol;
 }
+
+test {
+    const sol = try solution(std.testing.allocator);
+
+    try std.testing.expectEqual(549, sol.part1);
+    try std.testing.expectEqual(589, sol.part2);
+}

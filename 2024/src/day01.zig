@@ -41,3 +41,10 @@ pub fn solution(alloc: std.mem.Allocator) !utils.AOCSolution {
         sol.part2 += item * count(u31, rightColumn.items, item);
     return sol;
 }
+
+test {
+    const sol = try solution(std.testing.allocator);
+
+    try std.testing.expectEqual(2815556, sol.part1);
+    try std.testing.expectEqual(23927637, sol.part2);
+}

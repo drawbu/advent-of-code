@@ -15,9 +15,9 @@ pub fn main() !void {
         @import("day02.zig").solution,
     }) |i, day| {
         if (day) |func| {
-            try stdout.print("day{d:02}: {any}\n", .{ i, try func(allocator) });
+            try stdout.print("day{d:0>2}: {any}\n", .{ i, try func(allocator) });
         } else {
-            try stdout.print("day{d:02}: skipped\n", .{i});
+            try stdout.print("day{d:0>2}: skipped\n", .{i});
         }
     }
 
