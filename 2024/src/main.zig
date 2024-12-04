@@ -12,6 +12,7 @@ pub fn main() !void {
         @import("day01.zig").solution,
         @import("day02.zig").solution,
         @import("day03.zig").solution,
+        @import("day04.zig").solution,
     }) |i, day| {
         if (day) |func| {
             try stdout.print("day{d:0>2}: {any}\n", .{ i, try func(allocator) });
