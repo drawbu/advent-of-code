@@ -55,7 +55,7 @@ const Move = enum {
     void,
 };
 
-fn can_move(map: []const Tile, pos: *Position, direction: u8, width: usize) Move {
+fn can_move(map: []const Tile, pos: *Position, direction: u2, width: usize) Move {
     var new: Position = pos.*;
 
     switch (direction) {
@@ -79,7 +79,6 @@ fn can_move(map: []const Tile, pos: *Position, direction: u8, width: usize) Move
                 return .void;
             new.x -= 1;
         },
-        else => unreachable,
     }
 
     switch (map[new.idx(width)]) {
@@ -98,17 +97,18 @@ fn compute(map: []Tile, g: Guard, width: usize) bool {
         switch (can_move(map, &guard.pos, guard.direction, width)) {
             .void => return true,
             .ko => guard.direction +%= 1,
-            .ok => {},
+            .ok => {
+                const tile = &map[guard.pos.idx(width)];
+                switch (tile.*) {
+                    .visited => {},
+                    else => tile.* = .{ .visited = 0b0000 },
+                }
+                // infinite loop
+                if ((tile.visited & (@as(u4, 0b1) << guard.direction)) != 0)
+                    return false;
+                tile.visited |= @as(u4, 0b1) << guard.direction;
+            },
         }
-        const tile = &map[guard.pos.idx(width)];
-        switch (tile.*) {
-            .visited => {},
-            else => tile.* = .{ .visited = 0b0000 },
-        }
-        // infinite loop
-        if ((tile.visited & (@as(u4, 0b1) << guard.direction)) != 0)
-            return false;
-        tile.visited |= @as(u4, 0b1) << guard.direction;
     }
 }
 
@@ -134,6 +134,8 @@ pub fn solution(alloc: std.mem.Allocator) !utils.AOCSolution {
     }
 
     // part 2
+    const m2 = try alloc.dupe(Tile, map.items);
+    defer alloc.free(m2);
     for (0.., map.items) |i, _| {
         switch (m1[i]) {
             .obstacle => continue,
@@ -141,9 +143,7 @@ pub fn solution(alloc: std.mem.Allocator) !utils.AOCSolution {
             .visited => {},
         }
         // No idea how it's faster to alloc on each loop but ok
-        // @memcpy(m2, map.items);
-        const m2 = try alloc.dupe(Tile, map.items);
-        defer alloc.free(m2);
+        @memcpy(m2, map.items);
         m2[i] = .obstacle;
         if (!compute(m2, guard, width))
             sol.part2 += 1;
