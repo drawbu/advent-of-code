@@ -8,6 +8,7 @@ pub const solutions = [_]?*const fn (std.mem.Allocator) anyerror!utils.AOCSoluti
     @import("day04.zig").solution,
     @import("day05.zig").solution,
     @import("day06.zig").solution,
+    @import("day07.zig").solution,
 };
 
 fn get_day() !?u8 {
@@ -27,9 +28,9 @@ pub fn main() !void {
     const allocator = arena.allocator();
 
     if (try get_day()) |day| {
-        if (day >= solutions.len)
+        if (day == 0 or day > solutions.len)
             return;
-        if (solutions[day]) |func|
+        if (solutions[day - 1]) |func|
             try stdout.print("day{d:0>2}: {any}\n", .{ day, try func(allocator) });
         return;
     }
