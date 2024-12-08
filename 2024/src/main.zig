@@ -9,6 +9,7 @@ pub const solutions = [_]?*const fn (std.mem.Allocator) anyerror!utils.AOCSoluti
     @import("day05.zig").solution,
     @import("day06.zig").solution,
     @import("day07.zig").solution,
+    @import("day08.zig").solution,
 };
 
 fn get_day() !?u8 {
