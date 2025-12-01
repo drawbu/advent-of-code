@@ -1,7 +1,9 @@
 const std = @import("std");
 const utils = @import("utils.zig");
 
-pub const solutions = [_]?*const fn (std.mem.Allocator) anyerror!utils.AOCSolution{};
+pub const solutions = [_]?*const fn (std.mem.Allocator) anyerror!utils.AOCSolution{
+    @import("day01.zig").solution,
+};
 
 fn get_day() !?u8 {
     var args = std.process.args();
