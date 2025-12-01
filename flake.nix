@@ -38,6 +38,14 @@
               export ZIG_GLOBAL_CACHE_DIR=$out/2024/.cache
             '';
           };
+
+          "2025" = pkgs.mkShell {
+            inputsFrom = [ packages."2025" ];
+            packages = with pkgs; [ zig ];
+            shellHook = ''
+              export ZIG_GLOBAL_CACHE_DIR=$out/2025/.cache
+            '';
+          };
         };
 
         packages = {
@@ -65,6 +73,12 @@
           "2024" = pkgs.zigStdenv.mkDerivation {
             name = "aoc2024";
             src = ./2024;
+            nativeBuildInputs = with pkgs; [ zig.hook ];
+          };
+
+          "2025" = pkgs.zigStdenv.mkDerivation {
+            name = "aoc2025";
+            src = ./2025;
             nativeBuildInputs = with pkgs; [ zig.hook ];
           };
         };
