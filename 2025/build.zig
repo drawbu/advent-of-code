@@ -15,12 +15,11 @@ pub fn build(b: *std.Build) void {
     // set a preferred release mode, allowing the user to decide how to optimize.
     const optimize = b.standardOptimizeOption(.{});
 
-    const exe = b.addExecutable(.{
-        .name = "aoc2025",
+    const exe = b.addExecutable(.{ .name = "aoc2025", .root_module = b.createModule(.{
         .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
-    });
+    }) });
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default
@@ -52,11 +51,11 @@ pub fn build(b: *std.Build) void {
     for (1..26) |day| {
         const filename = std.fmt.allocPrint(b.allocator, "src/day{d:0>2}.zig", .{day}) catch unreachable;
         if (std.fs.cwd().access(filename, .{})) |_| {
-            const day_tests = b.addTest(.{
+            const day_tests = b.addTest(.{ .root_module = b.createModule(.{
                 .root_source_file = b.path(filename),
                 .target = target,
                 .optimize = optimize,
-            });
+            }) });
             const run_day_tests = b.addRunArtifact(day_tests);
             test_step.dependOn(&run_day_tests.step);
         } else |_| {}

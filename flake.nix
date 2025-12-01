@@ -33,7 +33,7 @@
 
           "2024" = pkgs.mkShell {
             inputsFrom = [ packages."2024" ];
-            packages = with pkgs; [ zig ];
+            packages = with pkgs; [ zig_0_13 ];
             shellHook = ''
               export ZIG_GLOBAL_CACHE_DIR=$out/2024/.cache
             '';
@@ -73,7 +73,7 @@
           "2024" = pkgs.zigStdenv.mkDerivation {
             name = "aoc2024";
             src = ./2024;
-            nativeBuildInputs = with pkgs; [ zig.hook ];
+            nativeBuildInputs = with pkgs; [ zig_0_13.hook ];
           };
 
           "2025" = pkgs.zigStdenv.mkDerivation {

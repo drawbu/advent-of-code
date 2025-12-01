@@ -13,7 +13,9 @@ fn get_day() !?u8 {
 }
 
 pub fn main() !u8 {
-    const stdout = std.io.getStdOut().writer();
+    var stdout_buffer: [1024]u8 = undefined;
+    var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
+    const stdout = &stdout_writer.interface;
 
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
@@ -33,6 +35,7 @@ pub fn main() !u8 {
         } else {
             try stdout.print("day{d:0>2}: skipped\n", .{i});
         }
+        try stdout.flush();
     }
     return 0;
 }
