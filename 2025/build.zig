@@ -31,12 +31,15 @@ pub fn build(b: *std.Build) void {
     const solutions_module = blk: {
         var solutions_list: std.ArrayList(u8) = .empty;
         var writer = solutions_list.writer(b.allocator);
-        writer.writeAll(
+
+        const header =
             \\const std = @import("std");
             \\const utils = @import("utils.zig");
             \\pub const solutions = [_]?*const fn (std.mem.Allocator) anyerror!utils.AOCSolution{
             \\
-        ) catch unreachable;
+        ;
+        writer.writeAll(header) catch unreachable;
+
         const wf = b.addWriteFiles();
         const inputs_options = b.addOptions();
         for (availableDays, 1..) |filename, day| {
@@ -45,17 +48,15 @@ pub fn build(b: *std.Build) void {
                 const input_bytes = std.fs.cwd().readFileAlloc(b.allocator, input_filename, 1024 * 1024) catch unreachable;
                 inputs_options.addOption([]const u8, b.fmt("day{d:0>2}", .{day}), input_bytes);
 
-                writer.writeAll(
-                    \\struct {
-                    \\  pub fn sol(alloc: std.mem.Allocator) !utils.AOCSolution {
-                ) catch unreachable;
-                writer.print(
-                    \\ return @import("src/day{d:0>2}.zig").solution(alloc, @import("inputs").day{d:0>2});
+                const entry = std.fmt.allocPrint(b.allocator,
+                    \\    struct {{
+                    \\      pub fn sol(alloc: std.mem.Allocator) !utils.AOCSolution {{
+                    \\        return @import("src/day{d:0>2}.zig").solution(alloc, @import("inputs").day{d:0>2});
+                    \\      }}
+                    \\    }}.sol,
+                    \\
                 , .{ day, day }) catch unreachable;
-                writer.writeAll(
-                    \\  }
-                    \\}.sol,
-                ) catch unreachable;
+                writer.writeAll(entry) catch unreachable;
             } else {
                 writer.writeAll("    null,\n") catch unreachable;
             }
@@ -102,7 +103,7 @@ pub fn build(b: *std.Build) void {
     run_step.dependOn(&run_cmd.step);
 
     // zig build test
-    const test_step = b.step("test", "Run unit tests");
+    const test_step = b.step("test", "Run tests");
     for (availableDays) |filename| {
         const file = filename orelse continue;
         const day_tests = b.addTest(.{ .root_module = b.createModule(.{
