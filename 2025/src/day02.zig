@@ -11,13 +11,14 @@ fn cmp(s: []const u8, n: usize) bool {
     return true;
 }
 
-pub fn solution(_: std.mem.Allocator, file_content: []const u8) !utils.AOCSolution {
+pub fn solution(alloc: std.mem.Allocator, file_content: []const u8) !utils.AOCSolution {
     var sol = utils.AOCSolution{ .part1 = 0, .part2 = 0 };
-    var file = std.io.fixedBufferStream(file_content);
+    var input = try utils.AOCInput.init(alloc, file_content);
+    defer input.deinit();
 
     var buf: [32]u8 = undefined;
-    var reader = file.reader();
-    while (try reader.readUntilDelimiterOrEof(&buf, ',')) |range| {
+    var ranges = std.mem.splitAny(u8, input.items[0], ",");
+    while (ranges.next()) |range| {
         var it = std.mem.splitAny(u8, range, "-");
         const start =
             try std.fmt.parseInt(usize, it.next() orelse continue, 10);

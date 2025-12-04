@@ -19,21 +19,13 @@ fn count(grid: []const []const u8, y: usize, x: usize) bool {
 
 pub fn solution(alloc: std.mem.Allocator, file_content: []const u8) !utils.AOCSolution {
     var sol = utils.AOCSolution{ .part1 = 0, .part2 = 0 };
-
-    var grid: std.ArrayList([]u8) = .empty;
-    defer {
-        for (grid.items) |l|
-            alloc.free(l);
-        grid.deinit(alloc);
-    }
-    var it = std.mem.splitAny(u8, file_content, "\n");
-    while (it.next()) |line|
-        try grid.append(alloc, try alloc.dupe(u8, line));
+    var input = try utils.AOCInput.init(alloc, file_content);
+    defer input.deinit();
 
     // part 1
-    for (0.., grid.items) |y, line| {
+    for (0.., input.items) |y, line| {
         for (0.., line) |x, _| {
-            if (count(grid.items, y, x)) sol.part1 += 1;
+            if (count(input.items, y, x)) sol.part1 += 1;
         }
     }
 
@@ -41,11 +33,11 @@ pub fn solution(alloc: std.mem.Allocator, file_content: []const u8) !utils.AOCSo
     var sum: usize = 1;
     while (sum > 0) {
         sum = 0;
-        for (0.., grid.items) |y, line| {
+        for (0.., input.items) |y, line| {
             for (0.., line) |x, _| {
-                if (count(grid.items, y, x)) {
+                if (count(input.items, y, x)) {
                     sum += 1;
-                    grid.items[y][x] = '.';
+                    input.items[y][x] = '.';
                 }
             }
         }

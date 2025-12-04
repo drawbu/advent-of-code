@@ -7,13 +7,12 @@ fn joltage(bank: []const u8, size: usize) usize {
     return (bank[idx] - '0') * std.math.pow(usize, 10, size - 1) + joltage(bank[idx + 1 ..], size - 1);
 }
 
-pub fn solution(_: std.mem.Allocator, file_content: []const u8) !utils.AOCSolution {
+pub fn solution(alloc: std.mem.Allocator, file_content: []const u8) !utils.AOCSolution {
     var sol = utils.AOCSolution{ .part1 = 0, .part2 = 0 };
-    var file = std.io.fixedBufferStream(file_content);
+    var input = try utils.AOCInput.init(alloc, file_content);
+    defer input.deinit();
 
-    var buf: [1024]u8 = undefined;
-    var reader = file.reader();
-    while (try reader.readUntilDelimiterOrEof(&buf, '\n')) |line| {
+    for (input.items) |line| {
         sol.part1 += joltage(line, 2);
         sol.part2 += joltage(line, 12);
     }
