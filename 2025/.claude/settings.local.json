@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(zig test:*)",
+      "WebSearch",
+      "WebFetch(domain:ziggit.dev)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

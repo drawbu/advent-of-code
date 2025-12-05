@@ -10,11 +10,11 @@ pub fn solution(alloc: std.mem.Allocator, file_content: []const u8) !utils.AOCSo
     var input = try utils.AOCInput.init(alloc, file_content);
     defer input.deinit();
 
-    var ranges: std.ArrayList(struct {
+    const Range = struct {
         from: usize,
         to: usize,
-        active: bool,
-    }) = .empty;
+    };
+    var ranges: std.ArrayList(Range) = .{};
     defer ranges.deinit(alloc);
 
     var is_ranges = true;
@@ -26,7 +26,7 @@ pub fn solution(alloc: std.mem.Allocator, file_content: []const u8) !utils.AOCSo
             var it = std.mem.splitScalar(u8, line, '-');
             const from = try std.fmt.parseInt(usize, it.next() orelse continue, 10);
             const to = try std.fmt.parseInt(usize, it.next() orelse continue, 10);
-            try ranges.append(alloc, .{ .from = from, .to = to, .active = true });
+            try ranges.append(alloc, .{ .from = from, .to = to });
         } else {
             // part 1
             const ingredient = try std.fmt.parseInt(usize, line, 10);
@@ -40,20 +40,21 @@ pub fn solution(alloc: std.mem.Allocator, file_content: []const u8) !utils.AOCSo
     }
 
     // part 2
-    for (ranges.items) |*range| {
-        for (ranges.items) |*range2| {
-            if (!range2.active or range == range2) continue;
-            if (!between(usize, range.from, range2.from, range2.to) and
-                !between(usize, range.to, range2.from, range2.to))
-                continue;
-
-            range.active = false;
-            range2.from = @min(range2.from, range.from);
-            range2.to = @max(range2.to, range.to);
+    std.mem.sort(Range, ranges.items, {}, struct {
+        fn sort(_: void, a: Range, b: Range) bool {
+            return a.from < b.from;
         }
-        if (range.active)
-            sol.part2 += range.to - range.from + 1;
+    }.sort);
+    var last = ranges.items[0];
+    for (ranges.items[1..]) |range| {
+        if (range.from <= last.to + 1) {
+            last.to = @max(last.to, range.to);
+        } else {
+            sol.part2 += last.to - last.from + 1;
+            last = range;
+        }
     }
+    sol.part2 += last.to - last.from + 1;
 
     return sol;
 }
