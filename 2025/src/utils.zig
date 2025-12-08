@@ -7,20 +7,30 @@ pub const AOCSolution = struct {
 
 pub const AOCInput = struct {
     items: [][]u8,
+    width: usize,
+    height: usize,
+
     alloc: std.mem.Allocator,
     raw: []u8,
 
     pub fn init(alloc: std.mem.Allocator, raw: []const u8) !AOCInput {
-        var grid: std.ArrayList([]u8) = .empty;
-        try grid.ensureTotalCapacity(alloc, std.mem.count(u8, raw, "\n") + 1);
-
         const duped = try alloc.dupe(u8, raw);
-        var it = std.mem.splitAny(u8, duped, "\n");
-        while (it.next()) |line|
-            grid.appendAssumeCapacity(@constCast(line));
+        errdefer alloc.free(duped);
+
+        var items = try alloc.alloc([]u8, std.mem.count(u8, raw, "\n") + 1);
+        errdefer alloc.free(items);
+        {
+            var it = std.mem.splitAny(u8, duped, "\n");
+            var i: usize = 0;
+            while (it.next()) |line| : (i += 1)
+                items[i] = @constCast(line);
+        }
 
         return AOCInput{
-            .items = try grid.toOwnedSlice(alloc),
+            .items = items,
+            .height = items.len,
+            .width = items[0].len,
+
             .alloc = alloc,
             .raw = duped,
         };

@@ -26,6 +26,7 @@ pub fn main() !u8 {
             return 1;
         if (solutions[day - 1]) |func|
             try stdout.print("day{d:0>2}: {any}\n", .{ day, try func(allocator) });
+        try stdout.flush();
         return 0;
     }
 
