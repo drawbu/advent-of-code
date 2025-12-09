@@ -1,28 +1,36 @@
 const std = @import("std");
 const utils = @import("utils.zig");
 
-const Point = struct { x: usize, y: usize };
+const Point = struct { x: u32, y: u32 };
+const Square = struct {
+    w: u32,
+    e: u32,
+    n: u32,
+    s: u32,
 
-fn through_square(corner_a: Point, corner_b: Point, p1: Point, p2: Point) bool {
-    const w = @min(corner_a.x, corner_b.x);
-    const e = @max(corner_a.x, corner_b.x);
-    const n = @min(corner_a.y, corner_b.y);
-    const s = @max(corner_a.y, corner_b.y);
+    fn init(a: Point, b: Point) Square {
+        return .{
+            .w = @min(a.x, b.x),
+            .e = @max(a.x, b.x),
+            .n = @min(a.y, b.y),
+            .s = @max(a.y, b.y),
+        };
+    }
+};
 
-    if (p1.x == p2.x)
-        return !(p1.x <= w or p1.x >= e) and
-            @min(p1.y, p2.y) < s and @max(p1.y, p2.y) > n;
-    return !(p1.y <= n or p1.y >= s) and
-        @min(p1.x, p2.x) < e and @max(p1.x, p2.x) > w;
-}
-
-fn is_valid(points: []const Point, corner_a: Point, corner_b: Point) bool {
-    for (points[0 .. points.len - 1], points[1..]) |p1, p2| {
-        if (through_square(corner_a, corner_b, p1, p2)) {
-            return false;
+fn is_valid(square: Square, joints: []const Square) bool {
+    for (joints) |joint| {
+        if (joint.w == joint.e) {
+            if (!(joint.w <= square.w or joint.w >= square.e) and
+                joint.n < square.s and joint.s > square.n)
+                return false;
+        } else {
+            if (!(joint.n <= square.n or joint.n >= square.s) and
+                joint.w < square.e and joint.e > square.w)
+                return false;
         }
     }
-    return !through_square(corner_a, corner_b, points[points.len - 1], points[0]);
+    return true;
 }
 
 pub fn solution(alloc: std.mem.Allocator, file_content: []const u8) !utils.AOCSolution {
@@ -32,26 +40,38 @@ pub fn solution(alloc: std.mem.Allocator, file_content: []const u8) !utils.AOCSo
 
     const points = blk: {
         var points: std.ArrayList(Point) = .empty;
+        try points.ensureTotalCapacity(alloc, input.items.len);
         errdefer points.deinit(alloc);
         for (input.items) |line| {
             var it = std.mem.splitScalar(u8, line, ',');
-            try points.append(alloc, .{
-                .x = try std.fmt.parseInt(usize, it.next() orelse continue, 10),
-                .y = try std.fmt.parseInt(usize, it.next() orelse continue, 10),
+            points.appendAssumeCapacity(.{
+                .x = try std.fmt.parseInt(u32, it.next() orelse continue, 10),
+                .y = try std.fmt.parseInt(u32, it.next() orelse continue, 10),
             });
         }
         break :blk try points.toOwnedSlice(alloc);
     };
     defer alloc.free(points);
 
+    const joints = blk: {
+        var joints: std.ArrayList(Square) = .empty;
+        try joints.ensureTotalCapacity(alloc, points.len);
+        errdefer joints.deinit(alloc);
+        for (points[0 .. points.len - 1], points[1..]) |p1, p2|
+            joints.appendAssumeCapacity(Square.init(p1, p2));
+        joints.appendAssumeCapacity(Square.init(points[points.len - 1], points[0]));
+        break :blk try joints.toOwnedSlice(alloc);
+    };
+    defer alloc.free(joints);
+
     for (points, 0..) |p1, i| {
         for (points[i + 1 ..]) |p2| {
             const width = @max(p1.x, p2.x) - @min(p1.x, p2.x) + 1;
             const height = @max(p1.y, p2.y) - @min(p1.y, p2.y) + 1;
-            const area = width * height;
+            const area = @as(usize, width) * height;
             if (area > sol.part1)
                 sol.part1 = area;
-            if (area > sol.part2 and is_valid(points, p1, p2))
+            if (area > sol.part2 and is_valid(Square.init(p1, p2), joints))
                 sol.part2 = area;
         }
     }
